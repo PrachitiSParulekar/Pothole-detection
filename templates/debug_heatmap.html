@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Debug Heatmap - CivicSightAI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    #map {
+        width: 100%;
+        height: 600px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    .debug-info {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Debug Leaflet Map</h1>
+    <div class="debug-info">
+        <h3>Debug Information</h3>
+        <p id="leaflet-status">Checking Leaflet.js...</p>
+        <p id="map-status">Map status: Not initialized</p>
+        <p id="error-log">No errors</p>
+    </div>
+    
+    <div id="map"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet.heat plugin -->
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<script>
+console.log('Debug script starting...');
+
+// Update debug info
+function updateDebugInfo(id, message) {
+    document.getElementById(id).textContent = message;
+    console.log(message);
+}
+
+// Check if Leaflet loaded
+window.addEventListener('load', function() {
+    console.log('Window loaded');
+    
+    if (typeof L !== 'undefined') {
+        updateDebugInfo('leaflet-status', 'Leaflet.js loaded successfully! Version: ' + L.version);
+        
+        // Check for heat plugin
+        if (L.heatLayer) {
+            updateDebugInfo('leaflet-status', 'Leaflet.js and heat plugin loaded successfully!');
+        } else {
+            updateDebugInfo('leaflet-status', 'Leaflet.js loaded but heat plugin missing');
+        }
+        
+        // Initialize map
+        try {
+            updateDebugInfo('map-status', 'Initializing map...');
+            
+            const map = L.map('map').setView([19.0760, 72.8777], 11);
+            
+            updateDebugInfo('map-status', 'Map object created, adding tiles...');
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            updateDebugInfo('map-status', 'Map initialized successfully!');
+            
+            // Add a test marker
+            L.marker([19.0760, 72.8777]).addTo(map)
+                .bindPopup('Mumbai Center - Test Marker')
+                .openPopup();
+                
+            // Add a simple heatmap test
+            if (L.heatLayer) {
+                const testHeatData = [
+                    [19.0760, 72.8777, 0.8],
+                    [19.0728, 72.8826, 0.6],
+                    [19.0176, 72.8562, 0.9]
+                ];
+                
+                const heatLayer = L.heatLayer(testHeatData, {
+                    radius: 25,
+                    blur: 15
+                }).addTo(map);
+                
+                updateDebugInfo('map-status', 'Map with test heatmap initialized successfully!');
+            }
+            
+        } catch (error) {
+            updateDebugInfo('error-log', 'Error initializing map: ' + error.message);
+            updateDebugInfo('map-status', 'Map initialization failed');
+            console.error('Map initialization error:', error);
+        }
+        
+    } else {
+        updateDebugInfo('leaflet-status', 'ERROR: Leaflet.js failed to load');
+        updateDebugInfo('error-log', 'Leaflet.js library not found');
+    }
+});
+
+// Log any JavaScript errors
+window.addEventListener('error', function(e) {
+    updateDebugInfo('error-log', 'JavaScript Error: ' + e.message);
+    console.error('JavaScript error:', e);
+});
+</script>
+{% endblock %}

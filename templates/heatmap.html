@@ -1,0 +1,650 @@
+{% extends "base.html" %}
+
+{% block title %}Complaint Heatmap - CivicSightAI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    /* Heatmap Sections */
+    .heatmap-hero {
+        padding: var(--section-padding);
+        background: var(--secondary-color);
+        text-align: center;
+    }
+
+    .heatmap-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        background: linear-gradient(135deg, var(--text-color) 0%, var(--primary-color) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .heatmap-hero h1 i {
+        margin-right: 0.5rem;
+        color: var(--accent-color);
+    }
+
+    .heatmap-hero p {
+        font-size: 1.2rem;
+        line-height: 1.7;
+        color: var(--text-color);
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0.8;
+    }
+
+    /* Map Section */
+    .map-section {
+        padding: var(--section-padding);
+        background: var(--light-bg);
+    }
+    
+    /* Override container width for map section to be wider like desktop app */
+    .map-section .container {
+        max-width: 1600px;
+        padding: 0 1rem;
+    }
+
+    .map-controls {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 1550px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .map-controls h2 {
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+
+    .controls-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--text-color);
+        text-align: center;
+        position: relative;
+    }
+    
+    .controls-title::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: var(--primary-color);
+        margin: 0.7rem auto 0;
+        border-radius: 2px;
+    }
+
+    .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        align-items: end;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .control-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .control-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-size: 0.95rem;
+    }
+    
+    .control-group select {
+        padding: 0.75rem;
+        border: 2px solid rgba(152, 118, 84, 0.2);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: var(--secondary-color);
+        transition: border-color 0.3s ease;
+    }
+
+    .control-group select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(152, 118, 84, 0.1);
+    }
+
+    .refresh-btn {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.85rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        align-self: end;
+        height: fit-content;
+        margin-top: 1rem;
+        box-shadow: 0 4px 12px rgba(119, 93, 218, 0.2);
+    }
+
+    .refresh-btn:hover {
+        background: var(--hover-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(119, 93, 218, 0.4);
+    }
+
+    .view-toggle {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .view-status {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .badge {
+        padding: 4px 12px;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+    }
+    
+    .bg-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    /* Map Container */
+    #map {
+        width: 100%;
+        height: 550px !important;
+        min-height: 550px !important;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    /* Make sure the map canvas is visible and sized properly */
+    .leaflet-container {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 550px !important;
+    }
+    
+    .leaflet-popup-content {
+        border-radius: 8px;
+        border: 2px solid var(--primary-color);
+        font-family: inherit;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .heatmap-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .controls-grid {
+            grid-template-columns: 1fr;
+        }
+
+        #map {
+            height: 800px !important;
+            min-height: 800px !important;
+        }
+        
+        .leaflet-container {
+            min-height: 800px !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="heatmap-hero">
+    <div class="container">
+        <h1><i class="fas fa-map-marked-alt"></i> Pothole Heatmap</h1>
+        <p>Interactive map displaying all reported potholes in your area</p>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container">
+        <div class="map-controls">
+            <h3 class="controls-title"><i class="fas fa-sliders-h"></i> Map Controls</h3>
+            
+            <div class="controls-section-title">Filter Options</div>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="category-filter"><i class="fas fa-filter"></i> Filter by Category</label>
+                    <select id="category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="pothole">Potholes</option>
+                        <option value="garbage">Garbage</option>
+                        <option value="streetlight">Street Light</option>
+                        <option value="sidewalk">Sidewalk</option>
+                        <option value="traffic_sign">Traffic Sign</option>
+                        <option value="drainage">Drainage</option>
+                        <option value="graffiti">Graffiti</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="status-filter"><i class="fas fa-flag"></i> Filter by Status</label>
+                    <select id="status-filter">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="time-filter"><i class="fas fa-calendar"></i> Time Period</label>
+                    <select id="time-filter">
+                        <option value="all">All Time</option>
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 3 Months</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="highway-filter"><i class="fas fa-road"></i> Road Type</label>
+                    <select id="highway-filter">
+                        <option value="all">All Roads</option>
+                        <option value="motorway">Motorway</option>
+                        <option value="trunk">Trunk</option>
+                        <option value="primary">Primary</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="tertiary">Tertiary</option>
+                        <option value="residential">Residential</option>
+                    </select>
+                </div>
+                
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh Map
+                </button>
+            </div>
+        </div>
+        
+        <div id="map">
+            <div class="loading-indicator" id="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet.heat plugin for heatmap visualization -->
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<script>
+    let map;
+
+    function initMap() {
+        console.log('Initializing Leaflet map...');
+        
+        try {
+            // Create Leaflet map centered on Mumbai
+            map = L.map('map').setView([19.0760, 72.8777], 11);
+            
+            // Make map globally accessible for real-time updates
+            window.map = map;
+            
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Initialize empty heat layer for complaints
+            window.heatLayer = L.heatLayer([], {
+                radius: 25,
+                blur: 15,
+                maxZoom: 18,
+                gradient: {
+                    0.4: 'blue',
+                    0.65: 'lime',
+                    1: 'red'
+                }
+            }).addTo(map);
+            
+            console.log('Heat layer initialized');
+            
+            // Force map to resize to container size
+            setTimeout(() => {
+                map.invalidateSize();
+                console.log('Map resized to container dimensions');
+            }, 100);
+            
+            // *** NEW: Check for pending complaints from recent submissions ***
+            checkPendingComplaints();
+            
+            // *** NEW: Check for highlighted complaint from URL parameters ***
+            checkHighlightedComplaint();
+            
+            console.log('Leaflet map created successfully');
+            
+        } catch (error) {
+            console.error("Error initializing Leaflet map:", error);
+            document.getElementById('map').innerHTML = '<div style="padding: 20px; text-align: center;"><p><i class="fas fa-exclamation-circle"></i> Unable to load map. Please check your internet connection and refresh the page.</p></div>';
+        }
+    }
+
+    // *** HEAT LAYER MANAGEMENT FUNCTIONS ***
+
+    // Function to show new complaint as a point on heatmap immediately
+    function showComplaintOnHeatmap(latitude, longitude, complaintId = null, description = 'Recent complaint') {
+        // Check if heatLayer exists, else create it
+        if (!window.heatLayer) {
+            window.heatLayer = L.heatLayer([[latitude, longitude]], {
+                radius: 25,
+                blur: 15,
+                maxZoom: 18,
+                gradient: {
+                    0.4: 'blue',
+                    0.65: 'lime',
+                    1: 'red'
+                }
+            }).addTo(window.map);
+            console.log('Heat layer created with new complaint');
+        } else {
+            window.heatLayer.addLatLng([latitude, longitude]);
+            console.log(`Added new complaint to heat layer at (${latitude}, ${longitude})`);
+        }
+
+        // Add a marker with complaint ID
+        if (complaintId) {
+            const marker = L.marker([latitude, longitude], {
+                icon: L.icon({
+                    iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#28a745" width="32" height="32">
+                            <circle cx="12" cy="12" r="10" fill="#28a745"/>
+                            <text x="12" y="16" text-anchor="middle" fill="white" font-size="12" font-weight="bold">!</text>
+                        </svg>
+                    `),
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
+                })
+            })
+                .addTo(window.map)
+                .bindPopup(`
+                    <div style="text-align: center; padding: 8px;">
+                        <h4 style="margin: 0 0 8px 0; color: #28a745;">New Complaint</h4>
+                        <p style="margin: 0 0 8px 0;"><strong>ID:</strong> ${complaintId}</p>
+                        <p style="margin: 0; color: #666; font-size: 0.9em;">${description}</p>
+                        <div style="margin-top: 8px; font-size: 0.8em; color: #999;">
+                            📍 ${latitude.toFixed(6)}, ${longitude.toFixed(6)}
+                        </div>
+                    </div>
+                `)
+                .openPopup();
+
+            // Store marker for future reference
+            if (!window.complaintMarkers) {
+                window.complaintMarkers = [];
+            }
+            window.complaintMarkers.push({
+                marker: marker,
+                complaintId: complaintId,
+                lat: latitude,
+                lng: longitude
+            });
+        }
+        
+        // Pan map to show the new complaint
+        window.map.setView([latitude, longitude], Math.max(window.map.getZoom(), 15), {
+            animate: true,
+            duration: 1
+        });
+        
+        // Show success notification
+        const notificationMessage = complaintId ? 
+            `Complaint ${complaintId} added to heatmap!` : 
+            'Complaint added to heatmap! You can see the heat intensity at your location.';
+        showNotification(notificationMessage, 'success');
+    }
+
+    // *** REAL-TIME UPDATE FUNCTIONS ***
+    function checkPendingComplaints() {
+        // Check sessionStorage for recent complaint submissions
+        const pendingComplaint = sessionStorage.getItem('pendingComplaintLocation');
+        if (pendingComplaint) {
+            try {
+                const complaintData = JSON.parse(pendingComplaint);
+                console.log('Found pending complaint:', complaintData);
+                
+                // Add to map immediately with complaint ID
+                addRealTimeComplaint(
+                    complaintData.lat, 
+                    complaintData.lng, 
+                    complaintData.description || `Complaint ID: ${complaintData.complaintId}`,
+                    complaintData.complaintId
+                );
+                
+                // Show confirmation message with appropriate text for fallback locations
+                if (complaintData.isFallback) {
+                    showComplaintConfirmation(complaintData.lat, complaintData.lng, true);
+                } else {
+                    showComplaintConfirmation(complaintData.lat, complaintData.lng, false);
+                }
+                
+                // Clear the pending complaint
+                sessionStorage.removeItem('pendingComplaintLocation');
+                
+            } catch (error) {
+                console.error('Error processing pending complaint:', error);
+                sessionStorage.removeItem('pendingComplaintLocation'); // Clear corrupted data
+            }
+        }
+    }
+
+    function checkHighlightedComplaint() {
+        // Check URL parameters for highlighted complaint
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightId = urlParams.get('highlight');
+        const lat = parseFloat(urlParams.get('lat'));
+        const lng = parseFloat(urlParams.get('lng'));
+        
+        if (highlightId && !isNaN(lat) && !isNaN(lng)) {
+            console.log(`Highlighting complaint ${highlightId} at (${lat}, ${lng})`);
+            
+            // Wait a moment for map to be fully initialized
+            setTimeout(() => {
+                // Center map on the highlighted complaint
+                window.map.setView([lat, lng], 16);
+                
+                // Add a special highlighted marker
+                const marker = L.marker([lat, lng], {
+                    icon: L.icon({
+                        iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF6B35" width="40" height="40">
+                                <circle cx="12" cy="12" r="10" fill="#FF6B35" stroke="#fff" stroke-width="2"/>
+                                <text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${highlightId}</text>
+                            </svg>
+                        `),
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40]
+                    })
+                })
+                    .addTo(window.map)
+                    .bindPopup(`
+                        <div style="text-align: center; padding: 12px;">
+                            <h4 style="margin: 0 0 8px 0; color: #FF6B35;">🎯 Your Complaint</h4>
+                            <p style="margin: 0 0 8px 0;"><strong>Complaint ID:</strong> ${highlightId}</p>
+                            <p style="margin: 0 0 8px 0; color: #666;">Thank you for your submission!</p>
+                            <div style="margin-top: 8px; font-size: 0.8em; color: #999;">
+                                📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                            </div>
+                            <div style="margin-top: 8px; font-size: 0.9em; color: #28a745;">
+                                ✅ Authorities have been notified
+                            </div>
+                        </div>
+                    `)
+                    .openPopup();
+
+                // Add to heatmap as well
+                if (window.heatLayer) {
+                    window.heatLayer.addLatLng([lat, lng]);
+                }
+
+                // Store as highlighted complaint
+                window.highlightedComplaint = {
+                    marker: marker,
+                    complaintId: highlightId,
+                    lat: lat,
+                    lng: lng
+                };
+                
+                // Show notification about highlighted complaint
+                showNotification(`Showing your complaint ${highlightId} on the map`, 'success');
+                
+            }, 500);
+        }
+    }
+
+    function addRealTimeComplaint(lat, lng, description = 'Recent complaint', complaintId = null) {
+        if (!window.map) {
+            console.warn('Map not initialized yet, storing complaint for later');
+            return;
+        }
+
+        try {
+            // Add complaint to heat layer and create marker with complaint ID
+            showComplaintOnHeatmap(lat, lng, complaintId, description);
+            
+            console.log(`Real-time complaint added to heatmap at (${lat}, ${lng}) with ID: ${complaintId}`);
+            
+        } catch (error) {
+            console.error('Error adding real-time complaint to heatmap:', error);
+        }
+    }
+
+    function showComplaintConfirmation(lat, lng, isFallback = false) {
+        // Get complaint data from sessionStorage if available
+        const pendingComplaint = sessionStorage.getItem('pendingComplaintLocation');
+        let complaintId = null;
+        if (pendingComplaint) {
+            try {
+                const complaintData = JSON.parse(pendingComplaint);
+                complaintId = complaintData.complaintId;
+            } catch (error) {
+                console.error('Error parsing complaint data:', error);
+            }
+        }
+
+        // Add to heatmap first with complaint ID
+        showComplaintOnHeatmap(lat, lng, complaintId, `Complaint ID: ${complaintId || 'Unknown'}`);
+        
+        // Create appropriate message based on whether location is fallback
+        const message = isFallback ? 
+            '✅ Complaint Submitted!<br><small>📍 Approximate location (geocoding limitation)</small>' :
+            '✅ Complaint Submitted!<br><small>📍 Exact location mapped</small>';
+        
+        // Create appropriate icon color
+        const iconColor = isFallback ? '#FF9800' : '#4CAF50'; // Orange for fallback, green for exact
+        
+        // Add a temporary confirmation marker that will disappear after 5 seconds
+        const marker = L.marker([lat, lng], {
+            icon: L.icon({
+                iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${iconColor}" width="32" height="32">
+                        <circle cx="12" cy="12" r="10" fill="${iconColor}"/>
+                        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                    </svg>
+                `),
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            })
+        })
+            .addTo(window.map)
+            .bindPopup(`
+                <div style="text-align: center;">
+                    ${message}
+                    ${complaintId ? `<br><strong>ID:</strong> ${complaintId}` : ''}
+                </div>
+            `)
+            .openPopup();
+        
+        // Remove confirmation marker after 5 seconds
+        setTimeout(() => {
+            if (marker && window.map.hasLayer(marker)) {
+                window.map.removeLayer(marker);
+            }
+        }, 5000);
+    }
+
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            max-width: 300px;
+            font-size: 14px;
+            line-height: 1.4;
+        `;
+        notification.textContent = message;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 4000);
+    }
+
+    // Make functions globally accessible for cross-page communication
+    window.addRealTimeComplaint = addRealTimeComplaint;
+    window.showComplaintConfirmation = showComplaintConfirmation;
+    window.checkPendingComplaints = checkPendingComplaints;
+    window.checkHighlightedComplaint = checkHighlightedComplaint;
+    window.showComplaintOnHeatmap = showComplaintOnHeatmap;
+
+    // Initialize map when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+    });
+</script>
+{% endblock %}

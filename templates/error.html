@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ code }} - CivicSightAI{% endblock %}
+
+{% block content %}
+<section class="error-section">
+    <div class="container">
+        <div class="error-content">
+            <div class="error-code">{{ code }}</div>
+            <h1 class="error-title">{{ title }}</h1>
+            <p class="error-message">{{ message }}</p>
+            <div class="error-actions">
+                <a href="{{ url_for('home') }}" class="action-btn">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                {% if code == 500 %}
+                <a href="mailto:support@example.com" class="action-btn secondary">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-section {
+        padding: var(--section-padding);
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .error-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .error-code {
+        font-size: 8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+    }
+
+    .error-message {
+        font-size: 1.2rem;
+        color: rgba(0,0,0,0.6);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .error-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .action-btn {
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .action-btn.secondary {
+        background-color: #6c757d;
+    }
+
+    .action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 6rem;
+        }
+
+        .error-title {
+            font-size: 1.8rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+        }
+
+        .error-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

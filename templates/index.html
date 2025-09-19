@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-logo"><i class="fas fa-eye"></i></div>
+            <h1>CivicSightAI</h1>
+            <p class="hero-subtitle">AI + Community = Better Roads</p>
+            <p class="hero-description">
+                CivicSightAI combines artificial intelligence with community reporting to identify and track potholes in your area. Our system helps municipalities prioritize road repairs and keeps citizens informed about infrastructure issues that affect their daily commute.
+            </p>
+            <div class="hero-buttons">
+                <a href="#upload-section" class="btn btn-primary">Report Pothole</a>
+                <a href="{{ url_for('heatmap') }}" class="btn btn-secondary">View Heatmap</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Uncover Road Issues</h2>
+            <p>Our platform offers multiple ways to identify and address pothole problems</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI Detection</h3>
+                <p>Advanced computer vision technology automatically identifies potholes from uploaded images with high accuracy</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Community Driven</h3>
+                <p>Citizens report road issues directly, creating a comprehensive database of infrastructure problems</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h3>Real-time Mapping</h3>
+                <p>Interactive heatmap shows pothole locations and severity across your municipality</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="section-divider">
+    <div class="container">
+        <div class="divider-line">
+            <div class="divider-icon">
+                <i class="fas fa-road"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Section -->
+<section class="upload-section" id="upload-section">
+    <div class="container">
+        <div class="title-container">
+            <h2 class="section-title">Report a <span>Pothole</span></h2>
+        </div>
+        
+        <div class="upload-container">
+            <form method="POST" action="{{ url_for('api_complaints') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div class="upload-dropzone" id="upload-dropzone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="dropzone-text">Drag & drop photo or click to browse</p>
+                        <input type="file" id="photo" name="photo" accept="image/*" required style="display:none;">
+                    </div>
+                    <div id="file-preview"></div>
+                    <small>Maximum file size: 16MB. Supported formats: JPG, PNG, GIF</small>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="location">Exact Location</label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter street address or intersection" required>
+                            <small>Example: 123 Main Street, Springfield or Main St & 1st Ave</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Additional Description (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" placeholder="Describe the pothole severity, traffic impact, or any other relevant details" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="citizen_name">Your Name</label>
+                            <input type="text" class="form-control" id="citizen_name" name="citizen_name" placeholder="Enter your full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="citizen_phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="citizen_phone" name="citizen_phone" placeholder="+1234567890" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="citizen_email">Email Address (Optional)</label>
+                            <input type="email" class="form-control" id="citizen_email" name="citizen_email" placeholder="your.email@example.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="notification-preferences">
+                        <h4>Notification Preferences</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="notify_email" checked> 
+                                <span class="checkbox-text">Email Updates</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="notify_whatsapp" checked> 
+                                <span class="checkbox-text">WhatsApp Updates</span>
+                            </label>
+                        </div>
+                        <small><b>New!</b> Get real-time WhatsApp updates on your complaint status</small>
+                    </div>
+                </div>
+
+                <div class="form-submit">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Report Pothole
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let processedImageDisplayed = false;
+
+    // Handle file input via dropzone
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropzone = document.getElementById('upload-dropzone');
+        const fileInput = document.getElementById('photo');
+        
+        if (dropzone && fileInput) {
+            // Handle click on dropzone
+            dropzone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // Handle drag and drop
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('active');
+            });
+            
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('active');
+            });
+            
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('active');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateFilePreview(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Update preview when file selected
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) {
+                    updateFilePreview(fileInput.files[0]);
+                }
+            });
+        }
+    });
+
+    function updateFilePreview(file) {
+        const previewElement = document.getElementById('file-preview');
+        const dropzoneText = document.querySelector('.dropzone-text');
+        
+        if (!previewElement) return;
+        
+        // Clear previous preview
+        previewElement.innerHTML = '';
+        
+        // Check if file is an image
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.classList.add('preview-image');
+            img.style.cssText = "max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);";
+            
+            previewElement.appendChild(img);
+            
+            const reader = new FileReader();
+            reader.onload = (e) => { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+            
+            // Update dropzone text
+            if (dropzoneText) {
+                dropzoneText.textContent = file.name;
+            }
+        }
+    }
+
+    // Handle form submission with AJAX
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        const photo = document.getElementById('photo').files[0];
+        const location = document.getElementById('location').value.trim();
+
+        if (!photo) {
+            showMessage('Please upload a photo of the pothole.', 'error');
+            return;
+        }
+
+        if (!location) {
+            showMessage('Please provide the location of the pothole.', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Image...';
+        submitBtn.disabled = true;
+
+        // Prepare form data from the actual form
+        const formData = new FormData(this);
+        
+        // Add any missing fields
+        if (!formData.has('photo')) {
+            formData.append('photo', photo);
+        }
+        if (!formData.has('location')) {
+            formData.append('location', location);
+        }
+
+        // Submit form via AJAX with proper error handling
+        fetch('/api/complaints', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success popup notification
+                showSuccessPopup(data.message, data.complaint_id, data.latitude, data.longitude);
+                
+                // Display processed image if available
+                if (data.processed_image && !processedImageDisplayed) {
+                    displayProcessedImage(data.processed_image, data.detection_info);
+                    processedImageDisplayed = true;
+                }
+                
+                // Store complaint data for heatmap page
+                sessionStorage.setItem('pendingComplaintLocation', JSON.stringify({
+                    lat: data.latitude,
+                    lng: data.longitude,
+                    description: `Complaint ID: ${data.complaint_id}`,
+                    complaintId: data.complaint_id,
+                    timestamp: Date.now(),
+                    location_text: data.location_text
+                }));
+                
+                // Reset form
+                document.querySelector('form').reset();
+                document.getElementById('file-preview').innerHTML = '';
+                document.querySelector('.dropzone-text').textContent = 'Drag & drop photo or click to browse';
+                
+            } else {
+                showMessage(data.error || 'An error occurred', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage(`Connection error: ${error.message}. Please try again or check server status.`, 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+
+    function displayProcessedImage(imagePath, detectionInfo) {
+        // Remove existing processed image
+        const existingProcessed = document.getElementById('processed-image');
+        if (existingProcessed) {
+            existingProcessed.remove();
+        }
+
+        const processedDiv = document.createElement('div');
+        processedDiv.id = 'processed-image';
+        processedDiv.className = 'result-card animate-fadeInUp';
+        processedDiv.style.marginTop = '30px';
+        
+        let detectionHTML = '';
+        if (detectionInfo && detectionInfo.detected) {
+            detectionHTML = `
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <strong>Confidence:</strong> ${(detectionInfo.confidence * 100).toFixed(1)}%
+                    </div>
+                    <div class="stat-item">
+                        <strong>Severity:</strong> ${detectionInfo.severity}
+                    </div>
+                    <div class="stat-item">
+                        <strong>Estimated Area:</strong> ${detectionInfo.area_m2.toFixed(4)} m²
+                    </div>
+                </div>
+            `;
+        }
+        
+        processedDiv.innerHTML = `
+            <img src="/${imagePath}" class="result-image">
+            <div class="result-details">
+                <h3>✅ AI Analysis Complete</h3>
+                <p>Our system has analyzed your image and detected the following:</p>
+                ${detectionHTML}
+                <p style="margin-top: 15px; opacity: 0.8;">
+                    Report submitted successfully. You'll receive updates on repair status.
+                </p>
+            </div>
+        `;
+        
+        // Add to form section
+        document.querySelector('.upload-container').appendChild(processedDiv);
+    }
+
+    function showMessage(message, type) {
+        // Remove existing messages
+        const existingMessages = document.querySelectorAll('.flash-message');
+        existingMessages.forEach(msg => msg.remove());
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flash-message flash-${type}`;
+        messageDiv.textContent = message;
+        
+        // Add to top of upload container
+        const uploadContainer = document.querySelector('.upload-container');
+        uploadContainer.insertBefore(messageDiv, uploadContainer.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 300);
+        }, 5000);
+    }
+
+    function showSuccessPopup(message, complaintId, latitude, longitude) {
+        // Remove existing popup
+        const existingPopup = document.getElementById('success-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+
+        // Create popup overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'success-popup';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        `;
+
+        // Create popup content
+        const popup = document.createElement('div');
+        popup.style.cssText = `
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.4s ease;
+        `;
+
+        popup.innerHTML = `
+            <div style="color: #28a745; font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 style="color: #333; margin-bottom: 1rem; font-size: 1.5rem;">Complaint Successfully Submitted!</h2>
+            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
+                ${message}
+            </p>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <strong style="color: #495057;">Complaint ID: ${complaintId}</strong>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button id="view-heatmap-btn" style="
+                    background: linear-gradient(135deg, #007bff, #0056b3);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    text-decoration: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                ">
+                    <i class="fas fa-map-marked-alt"></i>
+                    View on Heatmap
+                </button>
+                <button id="close-popup-btn" style="
+                    background: #6c757d;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                ">
+                    Close
+                </button>
+            </div>
+        `;
+
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideIn {
+                from { transform: translateY(-50px) scale(0.9); opacity: 0; }
+                to { transform: translateY(0) scale(1); opacity: 1; }
+            }
+            #view-heatmap-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+            }
+            #close-popup-btn:hover {
+                background: #5a6268;
+                transform: translateY(-1px);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add event listeners
+        document.getElementById('view-heatmap-btn').addEventListener('click', () => {
+            window.location.href = '/heatmap';
+        });
+
+        document.getElementById('close-popup-btn').addEventListener('click', () => {
+            overlay.style.animation = 'fadeIn 0.3s ease reverse';
+            setTimeout(() => overlay.remove(), 300);
+        });
+
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => overlay.remove(), 300);
+            }
+        });
+
+        // Auto-close after 15 seconds
+        setTimeout(() => {
+            if (document.getElementById('success-popup')) {
+                overlay.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => overlay.remove(), 300);
+            }
+        }, 15000);
+    }
+
+    // Check for pending complaints when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const pendingComplaint = localStorage.getItem('pendingComplaint');
+        if (pendingComplaint) {
+            try {
+                const complaint = JSON.parse(pendingComplaint);
+                // If complaint is less than 5 minutes old, add to current session
+                if (Date.now() - complaint.timestamp < 300000) {
+                    console.log('🔄 Restored pending complaint');
+                }
+                localStorage.removeItem('pendingComplaint');
+            } catch (error) {
+                console.error('Error parsing pending complaint:', error);
+            }
+        }
+    });
+</script>
+{% endblock %}

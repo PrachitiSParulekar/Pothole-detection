@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Submitted Successfully - CivicSight AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <style>
+        .success-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        
+        .complaint-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .detail-value {
+            color: #343a40;
+        }
+        
+        .heatmap-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .heatmap-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .home-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .home-button:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .buttons-container {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="{{ url_for('index') }}">CivicSight AI</a>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('heatmap') }}" class="nav-link">Heatmap</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('notifications') }}" class="nav-link">Notifications</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="success-container">
+            <div class="success-icon">✅</div>
+            <h1>Complaint Submitted Successfully!</h1>
+            <p>Thank you for reporting the pothole. Your complaint has been recorded and the relevant authorities have been notified.</p>
+            
+            <div class="complaint-details">
+                <h3>Complaint Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Complaint ID:</span>
+                    <span class="detail-value">{{ complaint_data.complaint_id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value">{{ complaint_data.description }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">{{ complaint_data.location }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Coordinates:</span>
+                    <span class="detail-value">{{ "%.6f, %.6f"|format(latitude, longitude) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">{{ complaint_data.status|title }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Submitted:</span>
+                    <span class="detail-value">{{ complaint_data.created_at }}</span>
+                </div>
+                {% if complaint_data.citizen_name %}
+                <div class="detail-row">
+                    <span class="detail-label">Contact Name:</span>
+                    <span class="detail-value">{{ complaint_data.citizen_name }}</span>
+                </div>
+                {% endif %}
+                {% if complaint_data.citizen_phone %}
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">{{ complaint_data.citizen_phone }}</span>
+                </div>
+                {% endif %}
+                {% if complaint_data.citizen_email %}
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ complaint_data.citizen_email }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="buttons-container">
+                <a href="{{ url_for('heatmap') }}?highlight={{ complaint_data.complaint_id }}&lat={{ latitude }}&lng={{ longitude }}" 
+                   class="heatmap-button">
+                    📍 View My Complaint on Heatmap
+                </a>
+                <br>
+                <a href="{{ url_for('index') }}" class="home-button">
+                    🏠 Return to Home
+                </a>
+                <a href="{{ url_for('index') }}#report-form" class="home-button">
+                    ➕ Report Another Issue
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CivicSight AI</h3>
+                    <p>Automated pothole detection and civic issue reporting powered by AI technology.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('heatmap') }}">Heatmap</a></li>
+                        <li><a href="{{ url_for('notifications') }}">Notifications</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>For technical support or inquiries about this platform.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CivicSight AI. Making cities smarter, one report at a time.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-refresh page after 30 seconds to show updated heatmap
+        setTimeout(function() {
+            // Show a subtle notification
+            const notification = document.createElement('div');
+            notification.innerHTML = '📡 Your complaint is now being processed by city authorities...';
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #28a745; color: white; padding: 1rem; border-radius: 5px; z-index: 1000; opacity: 0.9;';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 5000);
+        }, 3000);
+        
+        // Add click tracking for heatmap button
+        document.querySelector('.heatmap-button').addEventListener('click', function() {
+            // Track that user wants to see their complaint on the map
+            console.log('User viewing complaint {{ complaint_data.complaint_id }} on heatmap');
+        });
+    </script>
+</body>
+</html>
