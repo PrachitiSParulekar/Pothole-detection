@@ -1,0 +1,113 @@
+/* Footer Styles */
+.footer {
+    background: var(--light-bg);
+    color: var(--text-color);
+    text-align: center;
+    padding: 3rem 0;
+    margin-top: 0;
+    border-top: 1px solid rgba(119, 93, 218, 0.1);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.footer-logo i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+.footer-description {
+    color: #aaaaaa;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--card-bg);
+    border-radius: 50%;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(119, 93, 218, 0.1);
+}
+
+.social-icons a:hover {
+    background: var(--primary-color);
+    color: var(--text-color);
+    transform: translateY(-3px);
+}
+
+.footer-links-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.footer-links-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--text-color);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: #aaaaaa;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(119, 93, 218, 0.1);
+    color: #aaaaaa;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-content, 
+    .footer-links-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
