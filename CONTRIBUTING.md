@@ -1,42 +1,23 @@
 # Contributing to CivicSightAI
 
-Thank you for your interest in contributing to CivicSightAI! Here's how you can help:
+Thanks for your interest in contributing! Here's how to get started:
 
-## 🚀 Quick Start
+## Quick Start 🚀
 
-### Prerequisites
+1. Fork & clone the repo
+2. Install dependencies: `pip install -r requirements.txt`
+3. Create a branch: `git checkout -b feature/your-feature`
+4. Make changes & test
+5. Submit a pull request
 
-- Python 3.8 or higher
-- PostgreSQL 12+ with PostGIS extension
-- Git
-- Basic understanding of Flask, PostgreSQL, and computer vision
+## Guidelines ✨
 
-### Quick Setup Guide
+- Follow PEP 8 style guide
+- Write meaningful commit messages
+- Include tests for new features
+- Update documentation as needed
 
-1. Fork and clone the repository
-2. Create a virtual environment: `python -m venv .venv`
-3. Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (Unix)
-4. Install dependencies: `pip install -r requirements.txt`
-5. Copy `.env.example` to `.env` and configure
-
-3. **Set up Database**
-   ```bash
-   # Copy environment template
-   cp .env.example .env
-   # Edit .env with your local settings
-   
-   # Setup database
-   python setup/setup_database.py
-   ```
-
-4. **Create a Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   # or
-   git checkout -b fix/your-bug-fix
-   ```
-
-## 📝 Development Guidelines
+Need help? Open an issue or ask in discussions!
 
 ### Code Style
 
