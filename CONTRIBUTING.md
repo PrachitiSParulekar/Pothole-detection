@@ -1,12 +1,8 @@
 # Contributing to CivicSightAI
 
-Thank you for your interest in contributing to CivicSightAI! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to CivicSightAI! Here's how you can help:
 
-## 🤝 Code of Conduct
-
-We are committed to providing a welcoming and inspiring community for all. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -15,32 +11,13 @@ We are committed to providing a welcoming and inspiring community for all. Pleas
 - Git
 - Basic understanding of Flask, PostgreSQL, and computer vision
 
-### Development Setup
+### Quick Setup Guide
 
-1. **Fork the Repository**
-   ```bash
-   # Fork on GitHub, then clone your fork
-   git clone https://github.com/YOUR_USERNAME/civicsight-ai.git
-   cd civicsight-ai
-   ```
-
-2. **Set up Development Environment**
-   ```bash
-   # Create virtual environment
-   python -m venv .venv
-   
-   # Activate virtual environment
-   # Windows
-   .venv\Scripts\activate
-   # macOS/Linux
-   source .venv/bin/activate
-   
-   # Install dependencies
-   pip install -r requirements.txt
-   
-   # Optional: Install development tools
-   pip install -r requirements-dev.txt
-   ```
+1. Fork and clone the repository
+2. Create a virtual environment: `python -m venv .venv`
+3. Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (Unix)
+4. Install dependencies: `pip install -r requirements.txt`
+5. Copy `.env.example` to `.env` and configure
 
 3. **Set up Database**
    ```bash
@@ -79,25 +56,15 @@ black .
 flake8 .
 ```
 
-### Commit Messages
+### How to Contribute
 
-Use conventional commit format:
+1. Create a new branch: `git checkout -b feature/your-feature`
+2. Make your changes
+3. Follow our code style (PEP 8)
+4. Write meaningful commit messages
+5. Push and create a Pull Request
 
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
-```
-
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
+For detailed guidelines, see our [Wiki](https://github.com/PrachitiSParulekar/Pothole-detection/wiki)
 - `chore`: Maintenance tasks
 
 **Examples:**

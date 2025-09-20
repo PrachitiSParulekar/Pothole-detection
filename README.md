@@ -1,5 +1,13 @@
 # CivicSightAI - Mumbai Pothole Detection & Reporting System
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+
+A comprehensive civic tech platform for reporting and visualizing pothole complaints in Mumbai. Features an interactive heatmap, real-time complaint tracking, and notification system.
+
+## 🛠️ Technology StackicSightAI - Mumbai Pothole Detection & Reporting System
+
 A comprehensive civic tech platform for reporting and visualizing pothole complaints in Mumbai. Features an interactive heatmap, real-time complaint tracking, and notification system.
 
 ## �️ Technology Stack
@@ -21,7 +29,7 @@ A comprehensive civic tech platform for reporting and visualizing pothole compla
 ### DevOps & Tools
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
-![VSCode](https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+
 
 ## �🚀 Features
 
@@ -160,31 +168,6 @@ Visit `http://localhost:5000` to access the application.
 - **Email SMTP** - Notification delivery
 - **GPS/Geolocation** - Precise location capture
 
-## 📊 API Endpoints
-
-### Heatmap API
-```
-GET /api/complaints/heatmap?days=90&category=pothole&status=pending
-```
-
-### Complaint Submission
-```
-POST /api/complaints
-Content-Type: multipart/form-data
-```
-
-### Notification Management
-```
-GET /notifications
-POST /api/notifications/send
-```
-
-## 🧪 Testing
-
-Run the test suite:
-```bash
-python -m pytest tests/
-```
 
 ## 📈 Database Schema
 
@@ -205,42 +188,6 @@ python -m pytest tests/
 3. Commit changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Mumbai Municipal Corporation for civic data
-- OpenStreetMap contributors for mapping data
-- YOLOv11 team for AI model architecture
-- Leaflet.js community for mapping tools
-
-## 📞 Support
-
-For support and questions:
-- 📧 Email: support@civicsightai.com
-- 📱 GitHub Issues: [Report Here](https://github.com/PrachitiSParulekar/Pothole-detection/issues)
-- 📖 Documentation: [Wiki](https://github.com/PrachitiSParulekar/Pothole-detection/wiki)
-
-## Project Status
-
-**Status**: Production Ready ✅
-
-This project has been successfully implemented with the following achievements:
-- ✅ **Heatmap Feature Complete**: Interactive heatmap displaying all complaint locations with toggle controls
-- ✅ **Mumbai Focus**: Clean, location-specific data with 6 distributed complaints across different areas
-- ✅ **Enhanced Visualization**: Toggle between heatmap, markers, and combined views
-- ✅ **Clean Codebase**: Removed unnecessary debug/test files and organized project structure
-- ✅ **Comprehensive Documentation**: Complete README with installation and API documentation
-- ✅ **Production Ready**: Ready for deployment with proper .gitignore and clean structure
-
-**Latest Updates**:
-- Code cleanup completed - removed 14+ unnecessary files
-- Enhanced heatmap visualization with improved intensity settings
-- Mumbai-specific branding and location distribution
-- Comprehensive project documentation
 
 ## Contributing
 
