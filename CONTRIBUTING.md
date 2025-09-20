@@ -1,23 +1,12 @@
 # Contributing to CivicSightAI
 
-Thanks for your interest in contributing! Here's how to get started:
+1. Fork & clone
+2. Create branch: `git checkout -b feature/xyz`
+3. Make changes
+4. Test
+5. Submit PR
 
-## Quick Start 🚀
-
-1. Fork & clone the repo
-2. Install dependencies: `pip install -r requirements.txt`
-3. Create a branch: `git checkout -b feature/your-feature`
-4. Make changes & test
-5. Submit a pull request
-
-## Guidelines ✨
-
-- Follow PEP 8 style guide
-- Write meaningful commit messages
-- Include tests for new features
-- Update documentation as needed
-
-Need help? Open an issue or ask in discussions!
+Follow PEP 8 & include tests. Questions? Open an issue!
 
 ### Code Style
 
