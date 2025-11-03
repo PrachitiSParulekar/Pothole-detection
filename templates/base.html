@@ -291,7 +291,109 @@
                     navMenu.classList.toggle('show');
                 });
             }
+            
+            // Enhanced flash message handling
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                // Add close button to flash messages
+                const closeBtn = document.createElement('button');
+                closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                closeBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: inherit;
+                    float: right;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                    padding: 0;
+                    margin-left: 1rem;
+                    opacity: 0.7;
+                    transition: opacity 0.3s ease;
+                `;
+                closeBtn.onmouseover = () => closeBtn.style.opacity = '1';
+                closeBtn.onmouseout = () => closeBtn.style.opacity = '0.7';
+                closeBtn.onclick = () => {
+                    message.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => message.remove(), 300);
+                };
+                message.appendChild(closeBtn);
+                
+                // Play notification sound based on message type
+                if (message.classList.contains('flash-success')) {
+                    playNotificationSound('success');
+                } else if (message.classList.contains('flash-error')) {
+                    playNotificationSound('error');
+                }
+                
+                // Auto-remove flash messages after 8 seconds
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.style.animation = 'slideOut 0.3s ease forwards';
+                        setTimeout(() => message.remove(), 300);
+                    }
+                }, 8000);
+            });
+            
+            // Add CSS animations for flash messages
+            if (flashMessages.length > 0) {
+                const style = document.createElement('style');
+                style.textContent = `
+                    .flash-message {
+                        animation: slideIn 0.4s ease forwards;
+                        margin-bottom: 1rem;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                        position: relative;
+                    }
+                    
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(-100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    
+                    @keyframes slideOut {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                            height: auto;
+                            margin-bottom: 1rem;
+                        }
+                        to {
+                            transform: translateX(-100%);
+                            opacity: 0;
+                            height: 0;
+                            margin-bottom: 0;
+                            padding-top: 0;
+                            padding-bottom: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         });
+        
+        function playNotificationSound(type) {
+            try {
+                let audioData;
+                if (type === 'success') {
+                    // Success sound (higher pitch, pleasant)
+                    audioData = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAA';
+                } else {
+                    // Error sound (lower pitch, subtle alert)
+                    audioData = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj9a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAACAAA';
+                }
+                const audio = new Audio(audioData);
+                audio.volume = 0.2;
+                audio.play().catch(() => {}); // Ignore if audio fails
+            } catch (e) {
+                // Ignore audio errors
+            }
+        }
     </script>
 </body>
 </html>

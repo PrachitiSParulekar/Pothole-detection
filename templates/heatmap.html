@@ -1,194 +1,68 @@
 {% extends "base.html" %}
 
-{% block title %}Complaint Heatmap - CivicSightAI{% endblock %}
+{% block title %}Mumbai Pothole Heatmap - CivicSightAI{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <style>
-    /* Heatmap Sections */
-    .heatmap-hero {
-        padding: var(--section-padding);
+    /* Clean Minimal Header */
+    .heatmap-header {
         background: var(--secondary-color);
-        text-align: center;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .heatmap-hero h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        color: var(--text-color);
-        letter-spacing: -0.04em;
-        line-height: 1.1;
-        background: linear-gradient(135deg, var(--text-color) 0%, var(--primary-color) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .heatmap-hero h1 i {
-        margin-right: 0.5rem;
-        color: var(--accent-color);
-    }
-
-    .heatmap-hero p {
-        font-size: 1.2rem;
-        line-height: 1.7;
-        color: var(--text-color);
-        max-width: 700px;
+    .header-content {
+        max-width: 1200px;
         margin: 0 auto;
-        opacity: 0.8;
+        padding: 0 2rem;
     }
 
-    /* Map Section */
-    .map-section {
-        padding: var(--section-padding);
-        background: var(--light-bg);
-    }
-    
-    /* Override container width for map section to be wider like desktop app */
-    .map-section .container {
-        max-width: 1600px;
-        padding: 0 1rem;
-    }
-
-    .map-controls {
-        background: var(--card-bg);
-        padding: 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        width: 100%;
-        max-width: 1550px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .map-controls h2 {
-        color: var(--accent-color);
-        margin-bottom: 1.5rem;
+    .heatmap-header h1 {
+        font-size: 1.8rem;
         font-weight: 600;
+        margin: 0;
+        color: var(--text-color);
         letter-spacing: -0.02em;
     }
 
-    .controls-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        color: var(--text-color);
-        text-align: center;
-        position: relative;
+    /* Map Section - Wide with Balanced Spacing */
+    .map-section {
+        padding: 0 2rem;  /* Add balanced horizontal padding */
+        background: var(--light-bg);
+        width: 100%;  /* Full width within padding */
     }
     
-    .controls-title::after {
-        content: "";
-        display: block;
-        width: 60px;
-        height: 3px;
-        background: var(--primary-color);
-        margin: 0.7rem auto 0;
-        border-radius: 2px;
-    }
-
-    .controls-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        align-items: end;
+    /* Container with comfortable max-width */
+    .map-section .container {
+        max-width: 1400px;  /* Comfortable max width */
         width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    
-    .control-group {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .control-group label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: var(--text-color);
-        font-size: 0.95rem;
-    }
-    
-    .control-group select {
-        padding: 0.75rem;
-        border: 2px solid rgba(152, 118, 84, 0.2);
-        border-radius: 8px;
-        font-family: inherit;
-        font-size: 1rem;
-        background: var(--secondary-color);
-        transition: border-color 0.3s ease;
+        margin: 0 auto;  /* Center the container */
+        padding: 0;
     }
 
-    .control-group select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(152, 118, 84, 0.1);
-    }
 
-    .refresh-btn {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.85rem 2rem;
-        border: none;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        align-self: end;
-        height: fit-content;
-        margin-top: 1rem;
-        box-shadow: 0 4px 12px rgba(119, 93, 218, 0.2);
-    }
 
-    .refresh-btn:hover {
-        background: var(--hover-color);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(119, 93, 218, 0.4);
-    }
 
-    .view-toggle {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .view-status {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
 
-    .badge {
-        padding: 4px 12px;
-        border-radius: 4px;
-        margin: 0.5rem 0;
-    }
-    
-    .bg-info {
-        background-color: #17a2b8;
-        color: white;
-    }
 
-    /* Map Container */
+
+    /* Map Container - Wide with Elegant Styling */
     #map {
         width: 100%;
-        height: 550px !important;
-        min-height: 550px !important;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        height: 75vh !important;  /* Use 75% of viewport height */
+        min-height: 600px !important;  /* Minimum height for usability */
+        border-radius: 12px;  /* Subtle rounded corners */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
         z-index: 1;
+        overflow: hidden;  /* Ensure content respects border radius */
     }
     
     /* Make sure the map canvas is visible and sized properly */
     .leaflet-container {
         width: 100% !important;
         height: 100% !important;
-        min-height: 550px !important;
+        min-height: 600px !important;  /* Match the minimum map height */
     }
     
     .leaflet-popup-content {
@@ -197,102 +71,110 @@
         font-family: inherit;
     }
 
+    /* Modern Loading Indicator */
+    .loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--text-color);
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        z-index: 1000;
+        display: none;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .loading-indicator i {
+        margin-right: 8px;
+        color: var(--primary-color);
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
-        .heatmap-hero h1 {
-            font-size: 2.5rem;
+        .heatmap-header h1 {
+            font-size: 1.5rem;
         }
 
-        .controls-grid {
-            grid-template-columns: 1fr;
+        .header-content {
+            padding: 0 1rem;
+        }
+
+        .map-section {
+            padding: 0 1rem;  /* Smaller padding on mobile */
         }
 
         #map {
-            height: 800px !important;
-            min-height: 800px !important;
+            height: 70vh !important;  /* Slightly less height on mobile */
+            min-height: 500px !important;  /* Smaller minimum for mobile */
+            border-radius: 8px;  /* Smaller border radius on mobile */
         }
         
         .leaflet-container {
-            min-height: 800px !important;
+            min-height: 500px !important;  /* Match mobile minimum */
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="heatmap-hero">
-    <div class="container">
-        <h1><i class="fas fa-map-marked-alt"></i> Pothole Heatmap</h1>
-        <p>Interactive map displaying all reported potholes in your area</p>
+<!-- Minimal Header -->
+<section class="heatmap-header">
+    <div class="header-content">
+        <h1>Mumbai Pothole Heatmap</h1>
     </div>
 </section>
 
 <!-- Map Section -->
 <section class="map-section">
     <div class="container">
-        <div class="map-controls">
-            <h3 class="controls-title"><i class="fas fa-sliders-h"></i> Map Controls</h3>
-            
-            <div class="controls-section-title">Filter Options</div>
-            <div class="controls-grid">
-                <div class="control-group">
-                    <label for="category-filter"><i class="fas fa-filter"></i> Filter by Category</label>
-                    <select id="category-filter">
-                        <option value="all">All Categories</option>
-                        <option value="pothole">Potholes</option>
-                        <option value="garbage">Garbage</option>
-                        <option value="streetlight">Street Light</option>
-                        <option value="sidewalk">Sidewalk</option>
-                        <option value="traffic_sign">Traffic Sign</option>
-                        <option value="drainage">Drainage</option>
-                        <option value="graffiti">Graffiti</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
+        <!-- Complaint Age Legend and Description -->
+        <div class="map-controls" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start;">
+            <!-- Age Legend with Website Theme Styling -->
+            <div class="legend-panel" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 500px;">
+                <h5 style="margin: 0 0 16px 0; font-size: 1.1rem; color: #2c3e50; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-chart-bar" style="color: #6366f1;"></i>
+                    Complaint Age Visualization
+                </h5>
                 
-                <div class="control-group">
-                    <label for="status-filter"><i class="fas fa-flag"></i> Filter by Status</label>
-                    <select id="status-filter">
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
+                <!-- Legend Items with Enhanced Styling -->
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.9rem; padding: 8px; border-radius: 8px; background: rgba(239, 68, 68, 0.05); border-left: 4px solid #ef4444;">
+                        <div style="width: 20px; height: 20px; background: #ef4444; border-radius: 50%; opacity: 1; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); border: 2px solid white;"></div>
+                        <span style="color: #1f2937; font-weight: 500;">
+                            <strong style="color: #ef4444;">🔥 Recent (0-7 days)</strong> - Newly reported, requires immediate attention
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.9rem; padding: 8px; border-radius: 8px; background: rgba(251, 146, 60, 0.05); border-left: 4px solid #f59e0b;">
+                        <div style="width: 20px; height: 20px; background: #f59e0b; border-radius: 50%; opacity: 0.9; border: 2px solid white;"></div>
+                        <span style="color: #1f2937; font-weight: 500;">
+                            <strong style="color: #f59e0b;">⚠️ Medium Age (8-30 days)</strong> - Being processed, follow-up recommended
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.9rem; padding: 8px; border-radius: 8px; background: rgba(107, 114, 128, 0.05); border-left: 4px solid #6b7280;">
+                        <div style="width: 20px; height: 20px; background: #6b7280; border-radius: 50%; opacity: 0.7; border: 2px solid white;"></div>
+                        <span style="color: #1f2937; font-weight: 500;">
+                            <strong style="color: #6b7280;">📅 Old (30+ days)</strong> - Long-standing issues, may need escalation
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.9rem; padding: 8px; border-radius: 8px; background: rgba(34, 197, 94, 0.05); border-left: 4px solid #22c55e;">
+                        <div style="width: 20px; height: 20px; background: #22c55e; border-radius: 50%; opacity: 1; border: 2px solid white;"></div>
+                        <span style="color: #1f2937; font-weight: 500;">
+                            <strong style="color: #22c55e;">✅ Resolved</strong> - Complaint has been successfully addressed
+                        </span>
+                    </div>
                 </div>
-                
-                <div class="control-group">
-                    <label for="time-filter"><i class="fas fa-calendar"></i> Time Period</label>
-                    <select id="time-filter">
-                        <option value="all">All Time</option>
-                        <option value="7">Last 7 Days</option>
-                        <option value="30">Last 30 Days</option>
-                        <option value="90">Last 3 Months</option>
-                    </select>
-                </div>
-                
-                <div class="control-group">
-                    <label for="highway-filter"><i class="fas fa-road"></i> Road Type</label>
-                    <select id="highway-filter">
-                        <option value="all">All Roads</option>
-                        <option value="motorway">Motorway</option>
-                        <option value="trunk">Trunk</option>
-                        <option value="primary">Primary</option>
-                        <option value="secondary">Secondary</option>
-                        <option value="tertiary">Tertiary</option>
-                        <option value="residential">Residential</option>
-                    </select>
-                </div>
-                
-                <button class="refresh-btn" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i> Refresh Map
-                </button>
             </div>
         </div>
         
         <div id="map">
             <div class="loading-indicator" id="loading-indicator">
-                <i class="fas fa-spinner fa-spin"></i> Loading...
+                <i class="fas fa-spinner fa-spin"></i> Loading map...
             </div>
         </div>
     </div>
@@ -312,11 +194,17 @@
         console.log('Initializing Leaflet map...');
         
         try {
-            // Create Leaflet map centered on Mumbai
-            map = L.map('map').setView([19.0760, 72.8777], 11);
+            // Create Leaflet map centered on actual complaint area with better zoom
+            map = L.map('map').setView([19.0667, 72.8646], 14);
             
             // Make map globally accessible for real-time updates
             window.map = map;
+            
+            // Define optimal bounds for Mumbai complaint area (with padding)
+            window.complaintBounds = [
+                [19.015, 72.835],  // Southwest corner (min lat, min lng with padding)
+                [19.125, 72.885]   // Northeast corner (max lat, max lng with padding)  
+            ];
             
             // Add OpenStreetMap tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -324,19 +212,25 @@
                 maxZoom: 19
             }).addTo(map);
             
-            // Initialize empty heat layer for complaints
+            // Initialize enhanced heat layer for complaints with better visibility
             window.heatLayer = L.heatLayer([], {
-                radius: 25,
-                blur: 15,
-                maxZoom: 18,
-                gradient: {
-                    0.4: 'blue',
-                    0.65: 'lime',
-                    1: 'red'
+                radius: 35,      // Increased radius for better visibility
+                blur: 20,        // Increased blur for smoother gradients
+                maxZoom: 15,     // Show heat at more zoom levels
+                max: 1.0,        // Maximum point intensity
+                gradient: {      // Enhanced color gradient
+                    0.2: '#3366ff', // Blue for low intensity
+                    0.4: '#00ff00', // Green for medium-low
+                    0.6: '#ffff00', // Yellow for medium
+                    0.8: '#ff9900', // Orange for medium-high  
+                    1.0: '#ff0000'  // Red for high intensity
                 }
             }).addTo(map);
             
             console.log('Heat layer initialized');
+            
+            // Load all complaints from API
+            loadComplaintsData();
             
             // Force map to resize to container size
             setTimeout(() => {
@@ -386,8 +280,7 @@
                 icon: L.icon({
                     iconUrl: 'data:image/svg+xml;base64,' + btoa(`
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#28a745" width="32" height="32">
-                            <circle cx="12" cy="12" r="10" fill="#28a745"/>
-                            <text x="12" y="16" text-anchor="middle" fill="white" font-size="12" font-weight="bold">!</text>
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#28a745"/>
                         </svg>
                     `),
                     iconSize: [32, 32],
@@ -487,8 +380,8 @@
                     icon: L.icon({
                         iconUrl: 'data:image/svg+xml;base64,' + btoa(`
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF6B35" width="40" height="40">
-                                <circle cx="12" cy="12" r="10" fill="#FF6B35" stroke="#fff" stroke-width="2"/>
-                                <text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${highlightId}</text>
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#FF6B35" stroke="#fff" stroke-width="1"/>
+                                <text x="12" y="16" text-anchor="middle" fill="white" font-size="8" font-weight="bold">${highlightId}</text>
                             </svg>
                         `),
                         iconSize: [40, 40],
@@ -578,8 +471,8 @@
             icon: L.icon({
                 iconUrl: 'data:image/svg+xml;base64,' + btoa(`
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${iconColor}" width="32" height="32">
-                        <circle cx="12" cy="12" r="10" fill="${iconColor}"/>
-                        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="${iconColor}"/>
+                        <path d="M9 9l2 2 4-4" stroke="white" stroke-width="1.5" fill="none"/>
                     </svg>
                 `),
                 iconSize: [32, 32],
@@ -635,16 +528,448 @@
         }, 4000);
     }
 
+    // *** COMPLAINT DATA LOADING FUNCTIONS ***
+    
+    function loadComplaintsData(filters = {}) {
+        console.log('Loading complaints data from API...', filters);
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (filters.days) params.append('days', filters.days);
+        if (filters.status) params.append('status', filters.status);
+        if (filters.category) params.append('category', filters.category);
+        if (filters.severity !== undefined) params.append('severity', filters.severity);
+        if (filters.start_date) params.append('start_date', filters.start_date);
+        if (filters.end_date) params.append('end_date', filters.end_date);
+        
+        // Default to last 90 days if no filters
+        if (!filters.days && !filters.start_date && !filters.end_date) {
+            params.append('days', '90');
+        }
+        
+        const url = `/api/complaints/heatmap?${params.toString()}`;
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Complaints data loaded:', data);
+                displayComplaintsOnMap(data);
+                updateSummaryStats(data);
+            })
+            .catch(error => {
+                console.error('Error loading complaints data:', error);
+                showNotification('Failed to load complaints data. Please refresh the page.', 'error');
+            });
+    }
+    
+    function displayComplaintsOnMap(data) {
+        if (!data.complaints || !Array.isArray(data.complaints)) {
+            console.warn('No complaints data to display');
+            return;
+        }
+        
+        console.log(`Displaying ${data.complaints.length} complaints on map`);
+        
+        // Clear existing complaint markers but keep heatmap layer
+        if (window.complaintMarkers) {
+            window.complaintMarkers.forEach(item => {
+                if (item.marker && window.map.hasLayer(item.marker)) {
+                    window.map.removeLayer(item.marker);
+                }
+            });
+            window.complaintMarkers = [];
+        } else {
+            window.complaintMarkers = [];
+        }
+        
+        // Clear and rebuild heat layer with all complaints
+        if (window.heatLayer) {
+            window.map.removeLayer(window.heatLayer);
+        }
+        
+        // Prepare heat points and markers
+        const heatPoints = [];
+        const markers = [];
+        
+        data.complaints.forEach(complaint => {
+            if (complaint.latitude && complaint.longitude) {
+                console.log(`Creating marker for complaint ${complaint.id} at (${complaint.latitude}, ${complaint.longitude})`);
+                
+                // Calculate intensity based on severity and age
+                const baseSeverity = complaint.severity || 1;
+                const ageFactor = getAgeFactor(complaint.age_category);
+                const intensity = Math.max(0.4, (baseSeverity * 0.3) + ageFactor); // Dynamic intensity
+                heatPoints.push([complaint.latitude, complaint.longitude, intensity]);
+                
+                // Create marker with age and status-based styling
+                const markerColor = getAgeBasedColor(complaint.age_category, complaint.status);
+                const severityIcon = getSeverityIcon(complaint.severity);
+                const ageIcon = getAgeIcon(complaint.age_category);
+                
+                // Create enhanced marker with age-based opacity
+                const opacity = complaint.age_category === 'old' ? 0.6 : 1.0;
+                const iconSize = complaint.age_category === 'recent' ? 32 : 28;
+                
+                const marker = L.marker([complaint.latitude, complaint.longitude], {
+                    icon: L.icon({
+                        iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${markerColor}" width="${iconSize}" height="${iconSize}" opacity="${opacity}">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="${markerColor}" stroke="#fff" stroke-width="1"/>
+                                <text x="12" y="15" text-anchor="middle" fill="white" font-size="7" font-weight="bold">${severityIcon}</text>
+                            </svg>
+                        `),
+                        iconSize: [iconSize, iconSize],
+                        iconAnchor: [iconSize/2, iconSize],
+                        popupAnchor: [0, -iconSize]
+                    }),
+                    opacity: opacity
+                });
+                
+                // Create enhanced popup content with age and additional details
+                const createdDate = complaint.created_at ? new Date(complaint.created_at).toLocaleDateString() : 'Unknown';
+                const statusBadge = `<span style="background: ${markerColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">${complaint.status || 'pending'}</span>`;
+                const ageBadge = `<span style="background: ${getAgeBasedColor(complaint.age_category, 'pending')}; color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em;">${ageIcon} ${complaint.age_days}d</span>`;
+                
+                // Ward office information
+                let wardInfo = '';
+                if (complaint.ward_info && complaint.ward_info.name) {
+                    wardInfo = `
+                        <div style="margin: 6px 0; padding: 4px; background: #f5f5f5; border-radius: 4px;">
+                            <strong style="font-size: 0.8em;">🏢 Assigned Ward:</strong><br>
+                            <span style="font-size: 0.8em;">${complaint.ward_info.name}</span>
+                        </div>`;
+                }
+                
+                // Detection information
+                let detectionInfo = '';
+                if (complaint.detection_data && complaint.detection_data.detected) {
+                    const confidence = (complaint.detection_data.confidence * 100).toFixed(1);
+                    const area = complaint.detection_data.area_m2 ? complaint.detection_data.area_m2.toFixed(2) : 'Unknown';
+                    detectionInfo = `
+                        <div style="margin: 6px 0; padding: 4px; background: #e8f5e8; border-radius: 4px;">
+                            <strong style="font-size: 0.8em;">🤖 AI Detection:</strong><br>
+                            <span style="font-size: 0.75em;">Confidence: ${confidence}% | Area: ${area}m²</span>
+                        </div>`;
+                }
+                
+                // Contact information
+                let contactInfo = '';
+                if (complaint.has_citizen_contact) {
+                    contactInfo = `<div style="margin: 4px 0; font-size: 0.8em; color: #666;">👤 Citizen reported</div>`;
+                }
+                
+                marker.bindPopup(`
+                    <div style="text-align: center; padding: 10px; min-width: 220px; max-width: 280px;">
+                        <h4 style="margin: 0 0 8px 0; color: ${markerColor};">📍 Complaint ${complaint.id}</h4>
+                        <div style="margin-bottom: 8px; display: flex; gap: 6px; justify-content: center; align-items: center;">
+                            ${statusBadge} ${ageBadge}
+                        </div>
+                        <p style="margin: 4px 0;"><strong>Category:</strong> ${complaint.category || 'Unknown'}</p>
+                        <p style="margin: 4px 0;"><strong>Severity:</strong> ${complaint.severity || 1}/5</p>
+                        <p style="margin: 4px 0;"><strong>Date:</strong> ${createdDate}</p>
+                        ${wardInfo}
+                        ${detectionInfo}
+                        ${contactInfo}
+                        <div style="margin-top: 8px; font-size: 0.8em; color: #666;">
+                            📍 ${complaint.latitude.toFixed(6)}, ${complaint.longitude.toFixed(6)}
+                        </div>
+                    </div>
+                `);
+                
+                markers.push(marker);
+                window.complaintMarkers.push({
+                    marker: marker,
+                    complaintId: complaint.id,
+                    lat: complaint.latitude,
+                    lng: complaint.longitude,
+                    status: complaint.status,
+                    category: complaint.category,
+                    severity: complaint.severity
+                });
+            }
+        });
+        
+        // Create enhanced heat layer with improved intensity calculation
+        window.heatLayer = L.heatLayer(heatPoints, {
+            radius: 35,        // Larger radius for better visibility
+            blur: 20,          // More blur for smoother gradients
+            maxZoom: 15,       // Show heat at more zoom levels
+            max: 2.0,          // Higher maximum for better contrast
+            gradient: {        // Enhanced Mumbai-themed gradient
+                0.2: '#1e3a8a',  // Deep blue for low intensity
+                0.4: '#0066cc',  // Medium blue
+                0.6: '#00cc66',  // Green for medium
+                0.8: '#ff6600',  // Orange for medium-high
+                1.0: '#cc0000'   // Deep red for high intensity
+            }
+        }).addTo(window.map);
+        
+        // Add markers in clusters to avoid overwhelming the map
+        if (markers.length > 50) {
+            // If too many markers, add high-priority ones first, then add others
+            const priorityMarkers = markers.filter((marker, index) => {
+                const complaint = data.complaints[index];
+                return complaint.severity >= 4; // Very high severity
+            });
+            
+            const regularMarkers = markers.filter((marker, index) => {
+                const complaint = data.complaints[index];
+                return complaint.severity < 4;
+            }).slice(0, 50); // Limit regular markers to 50
+            
+            // Add priority markers first
+            priorityMarkers.forEach(marker => marker.addTo(window.map));
+            // Add regular markers
+            regularMarkers.forEach(marker => marker.addTo(window.map));
+            
+            const totalDisplayed = priorityMarkers.length + regularMarkers.length;
+            showNotification(`Showing ${totalDisplayed} complaints (${priorityMarkers.length} high priority, ${markers.length} total loaded)`, 'info');
+        } else {
+            // Add all markers
+            markers.forEach(marker => marker.addTo(window.map));
+            showNotification(`Showing all ${markers.length} complaints on map`, 'success');
+        }
+        
+        console.log(`Heat layer created with ${heatPoints.length} points, ${markers.length} markers displayed`);
+        
+        // Statistics removed - showing only complaint markers with age visualization
+        
+        // Force map to refresh and show bounds that include all markers
+        if (markers.length > 0) {
+            setTimeout(() => {
+                try {
+                    const group = new L.featureGroup(markers);
+                    if (group.getBounds().isValid()) {
+                        // Use better padding and maximum zoom for local area
+                        window.map.fitBounds(group.getBounds(), { 
+                            padding: [50, 50],
+                            maxZoom: 16  // Don't zoom in too much for better context
+                        });
+                    }
+                } catch (e) {
+                    console.log('Could not auto-fit bounds:', e);
+                    // Fallback to predefined bounds for the complaint area
+                    if (window.complaintBounds) {
+                        window.map.fitBounds(window.complaintBounds);
+                    } else {
+                        window.map.setView([19.0667, 72.8646], 14);
+                    }
+                }
+            }, 1000);
+        } else {
+            // If no markers, show optimal bounds for the complaint area
+            if (window.complaintBounds) {
+                window.map.fitBounds(window.complaintBounds);
+            } else {
+                window.map.setView([19.0667, 72.8646], 14);
+            }
+        }
+    }
+    
+    // *** AGE-BASED STYLING FUNCTIONS ***
+    
+    function getAgeBasedColor(ageCategory, status) {
+        // Combine age and status for better visual differentiation
+        const baseColors = {
+            'recent': '#FF4444',    // Bright red for recent complaints
+            'medium': '#FF8800',    // Orange for medium age
+            'old': '#666666'        // Gray for old complaints
+        };
+        
+        // Modify based on status
+        if (status === 'resolved') {
+            return '#4CAF50'; // Always green for resolved
+        } else if (status === 'rejected') {
+            return '#8B0000'; // Dark red for rejected
+        }
+        
+        return baseColors[ageCategory] || '#9E9E9E';
+    }
+    
+    function getAgeFactor(ageCategory) {
+        // Return intensity factor based on age (newer = more intense)
+        switch (ageCategory) {
+            case 'recent': return 0.8;  // High intensity for recent
+            case 'medium': return 0.5;  // Medium intensity
+            case 'old': return 0.3;     // Lower intensity for old
+            default: return 0.4;
+        }
+    }
+    
+    function getAgeIcon(ageCategory) {
+        switch (ageCategory) {
+            case 'recent': return '🔥'; // Fire for recent
+            case 'medium': return '⚠️';  // Warning for medium
+            case 'old': return '📅';    // Calendar for old
+            default: return '📍';
+        }
+    }
+    
+    function getStatusColor(status) {
+        switch (status) {
+            case 'resolved': return '#4CAF50';  // Green
+            case 'in_progress': return '#FF9800';  // Orange  
+            case 'pending': return '#2196F3';  // Blue
+            case 'rejected': return '#F44336';  // Red
+            default: return '#9E9E9E';  // Gray
+        }
+    }
+    
+    function getSeverityIcon(severity) {
+        switch (severity) {
+            case 5: return '5';   // Critical
+            case 4: return '4';   // High
+            case 3: return '3';   // Medium
+            case 2: return '2';   // Low
+            case 1: 
+            default: return '1';  // Very Low
+        }
+    }
+    
+
+    
+    // *** SIMPLIFIED LOADING FUNCTIONS ***
+    
+    function refreshData() {
+        console.log('Refreshing data...');
+        showLoadingIndicator(true);
+        
+        // Reload with default data (no filters)
+        loadComplaintsData({});
+        
+        showNotification('Data refreshed successfully!', 'success');
+    }
+    
+    function showLoadingIndicator(show) {
+        const indicator = document.getElementById('loading-indicator');
+        if (indicator) {
+            indicator.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    // Override loadComplaintsData to hide loading indicator when complete
+    const originalLoadComplaintsData = loadComplaintsData;
+    loadComplaintsData = function(filters = {}) {
+        showLoadingIndicator(true);
+        
+        // Call original function
+        const result = originalLoadComplaintsData.call(this, filters);
+        
+        // Hide loading indicator after a short delay
+        setTimeout(() => {
+            showLoadingIndicator(false);
+        }, 1000);
+        
+        return result;
+    };
+
     // Make functions globally accessible for cross-page communication
     window.addRealTimeComplaint = addRealTimeComplaint;
+    // *** VIEW TOGGLE FUNCTIONS ***
+    
+    function toggleHeatmapView() {
+        console.log('Switching to heatmap view');
+        
+        // Show heatmap, hide markers
+        if (window.heatLayer && !window.map.hasLayer(window.heatLayer)) {
+            window.map.addLayer(window.heatLayer);
+        }
+        
+        if (window.complaintMarkers) {
+            window.complaintMarkers.forEach(item => {
+                if (item.marker && window.map.hasLayer(item.marker)) {
+                    window.map.removeLayer(item.marker);
+                }
+            });
+        }
+        
+        // Update button states
+        updateToggleButtons('heatmap');
+        showNotification('Switched to heatmap view - showing complaint density', 'info');
+    }
+    
+    function toggleMarkersView() {
+        console.log('Switching to markers view');
+        
+        // Hide heatmap, show markers
+        if (window.heatLayer && window.map.hasLayer(window.heatLayer)) {
+            window.map.removeLayer(window.heatLayer);
+        }
+        
+        if (window.complaintMarkers) {
+            window.complaintMarkers.forEach(item => {
+                if (item.marker && !window.map.hasLayer(item.marker)) {
+                    window.map.addLayer(item.marker);
+                }
+            });
+        }
+        
+        // Update button states
+        updateToggleButtons('markers');
+        showNotification('Switched to markers view - showing individual complaints', 'info');
+    }
+    
+    function toggleBothView() {
+        console.log('Switching to both views');
+        
+        // Show both heatmap and markers
+        if (window.heatLayer && !window.map.hasLayer(window.heatLayer)) {
+            window.map.addLayer(window.heatLayer);
+        }
+        
+        if (window.complaintMarkers) {
+            window.complaintMarkers.forEach(item => {
+                if (item.marker && !window.map.hasLayer(item.marker)) {
+                    window.map.addLayer(item.marker);
+                }
+            });
+        }
+        
+        // Update button states
+        updateToggleButtons('both');
+        showNotification('Showing both heatmap and individual markers', 'info');
+    }
+    
+    function updateToggleButtons(activeView) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to selected button
+        const buttonMap = {
+            'heatmap': 'heatmap-toggle',
+            'markers': 'markers-toggle', 
+            'both': 'both-toggle'
+        };
+        
+        const activeButton = document.getElementById(buttonMap[activeView]);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+    }
+
+    // *** GLOBAL FUNCTION ASSIGNMENTS ***
+    
     window.showComplaintConfirmation = showComplaintConfirmation;
     window.checkPendingComplaints = checkPendingComplaints;
     window.checkHighlightedComplaint = checkHighlightedComplaint;
     window.showComplaintOnHeatmap = showComplaintOnHeatmap;
+    window.refreshData = refreshData;
+    window.loadComplaintsData = loadComplaintsData;
+    window.toggleHeatmapView = toggleHeatmapView;
+    window.toggleMarkersView = toggleMarkersView;
+    window.toggleBothView = toggleBothView;
 
     // Initialize map when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
         initMap();
+        initializeFilterControls();
     });
 </script>
 {% endblock %}
