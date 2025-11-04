@@ -2,15 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#-contributing)
 
 A comprehensive civic tech platform for reporting and visualizing pothole complaints in Mumbai. Features an interactive heatmap, real-time complaint tracking, and notification system.
 
-## 🛠️ Technology StackicSightAI - Mumbai Pothole Detection & Reporting System
-
-A comprehensive civic tech platform for reporting and visualizing pothole complaints in Mumbai. Features an interactive heatmap, real-time complaint tracking, and notification system.
-
-## �️ Technology Stack
+## 🛠️ Technology Stack
 
 ### Backend
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -189,9 +185,7 @@ Visit `http://localhost:5000` to access the application.
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## Contributing
-
-Please read `CONTRIBUTING.md` for details on our code of conduct and the process for submitting pull requests.
+Please follow our code of conduct and ensure your contributions align with the project's goals.
 
 ## License
 
